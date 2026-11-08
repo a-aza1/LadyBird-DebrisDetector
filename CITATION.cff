@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this data or method, please cite it as below."
+title: "LadyBird-DebrisDetector: wind-driven trash accumulation on Lady Bird Lake"
+type: dataset
+authors:
+  - name: "LadyBird-DebrisDetector contributors"
+repository-code: "https://github.com/a-aza1/LadyBird-DebrisDetector"
+date-released: 2026-11-08
+version: "1.0"
+license: CC-BY-4.0
+keywords:
+  - citizen science
+  - litter
+  - floating debris
+  - wind
+  - Lady Bird Lake
+  - Austin

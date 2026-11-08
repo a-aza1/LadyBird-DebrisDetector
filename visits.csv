@@ -1,0 +1,1 @@
+visit_id,protocol_version,site_id,observed_at,observer,rating,days_since_cleaned,cleaned_this_visit,bags_collected,wind_from_deg,wind_from_compass,wind_speed_mph,wind_window_hours,onshore_mph,alongshore_mph,wind_class,rain_48h,river_current,photo_count,deviation,deviation_reason,notes,face_deg
