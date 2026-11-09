@@ -17,6 +17,26 @@ The study starts with a single site and will expand once the method is proven.
 | Data collection | November–December 2026 |
 | Results | Pending |
 
+## Background and Goal
+
+About 4 times a week, my morning walks along the boardwalk on the Blynn River Delta (30.25357, −97.74158 to 30.25266, −97.74071) have pointed out something deeply alarming - the volume and density of debris and physical pollutants have been accumulating with a visible ebb and flow.
+
+Debris density, as I have noticed, can vary daily. I am conducting this experiment to see if wind and water direction along with precipitation or weather patterns affect the density of accumulation in this lake pocket. 
+
+The goal of this experiment is to see how accurately the results of the experiment are against the hypotheses made by using field observations and collections in tandem with public facing data from Camp Mabry Station and the NOAA. If the experiment proves to be successful, my hope is that city workers and/or volunteer efforts can leverage such data collation to accurately predict trash accumulation in lake pockets to deploy cleanup efforts and decreasing duplicate time spent on the same site or sites that have already been tended to.
+
+Some additional hopes are to see a direct increase in wildlife activity with the efforts of reducing highly concentrated pockets of trash as well
+
+## Deviations 
+
+The mouth of the Bouldin Creek may be contributing to the pollutant runoff in this area, so taking that into consideration may be helpful in seeing if other future lake pockets are additionally affected by nuances like this as well.
+
+I am using an 11 foot net to conduct trash removal, and cannot get into the water to remove some of the very large pieces.
+
+## Future Hopes
+
+This experiment is focusing on specifically testing density in inorganic material collecting along deltas, eddies, or lake pockets. In the future, testing pollutant 
+
 ## The hypothesis
 
 The Blunn Creek Delta pocket opens to the northeast. Wind from that direction should push floating trash in; wind from the southwest should pull it out.
