@@ -53,7 +53,11 @@ No south-to-north wind shifts between consecutive visits yet.
 
 ## Wind cross-check against the archive
 
-No archived wind data yet. The daily GitHub Action fills `data/weather/katt_hourly.csv`.
+Wind class matched the archive on **1 of 1** visits; onshore wind differed by 0.4 mph on average.
+
+| Visit | Entered class | Archive class | Entered onshore mph | Archive onshore mph | Window |
+|---|---|---|---:|---:|---|
+| 20261108-f5yp | loading | loading | 4.4 | 4.9 | 24 h |
 
 ## Decision criteria
 
