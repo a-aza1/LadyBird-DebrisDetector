@@ -35,7 +35,9 @@ I am using an 11 foot net to conduct trash removal, and cannot get into the wate
 
 ## Future Hopes
 
-This experiment is focusing on specifically testing density in inorganic material collecting along deltas, eddies, or lake pockets. In the future, testing pollutant 
+This experiment is solely focusing on testing density in inorganic material collecting along deltas, eddies, or lake pockets by way of visual observation and limited, physical trash removal.
+
+In the future, field testing by using physical toxin-measuring instruments can test pollutants/spikes in water quality along certain pockets of the lake may offer a clue or important insight to see what pockets might be experiencing toxin level spikes, algal blooms, and more.
 
 ## The hypothesis
 
