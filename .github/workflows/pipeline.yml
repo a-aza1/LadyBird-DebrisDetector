@@ -1,0 +1,122 @@
+# Checks new data, archives weather, refreshes the analysis, and publishes the site.
+#
+# Runs when:
+#   - you push to main (for example, uploading a new data/visits.csv)
+#   - every day at 00:23 Central, to archive the previous day's weather
+#   - you click "Run workflow" on the Actions tab
+# Pull requests only get the data check; nothing is committed or published from them.
+
+name: Data pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths: ["data/visits.csv", "analysis/**"]
+  schedule:
+    - cron: "23 6 * * *"   # 06:23 UTC = 00:23 Central Standard Time
+  workflow_dispatch:
+    inputs:
+      since:
+        description: "Archive weather from this date (YYYY-MM-DD). Leave blank for the last 7 days."
+        required: false
+
+concurrency:
+  group: pipeline-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Check visits.csv
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+
+      - name: Get the previously committed visits.csv
+        if: github.event_name == 'push'
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ] \
+             && git cat-file -e "$BEFORE:data/visits.csv" 2>/dev/null; then
+            git show "$BEFORE:data/visits.csv" > "$RUNNER_TEMP/previous.csv"
+          else
+            git fetch --quiet --depth=1 origin "$BEFORE" 2>/dev/null \
+              && git show "$BEFORE:data/visits.csv" > "$RUNNER_TEMP/previous.csv" 2>/dev/null \
+              || : > "$RUNNER_TEMP/previous.csv"
+          fi
+
+      - name: Validate rows
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          if [ -f "$RUNNER_TEMP/previous.csv" ]; then
+            python3 analysis/validate.py --previous "$RUNNER_TEMP/previous.csv"
+          else
+            python3 analysis/validate.py
+          fi
+
+  update:
+    name: Archive weather and refresh analysis
+    needs: check
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Archive Camp Mabry wind and USGS river flow
+        continue-on-error: true   # an outage at NOAA or USGS shouldn't block publishing
+        env:
+          SINCE: ${{ github.event.inputs.since }}
+        run: |
+          if [ -n "$SINCE" ]; then
+            python3 analysis/fetch_weather.py --since "$SINCE"
+          else
+            python3 analysis/fetch_weather.py
+          fi
+
+      - name: Run the analysis
+        run: python3 analysis/analyze.py --out analysis/results.md
+
+      - name: Commit updated weather and results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/weather analysis/results.md
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+          else
+            git commit -m "Update weather archive and analysis results"
+            git pull --rebase --quiet origin main
+            git push
+          fi
+
+  deploy:
+    name: Publish to GitHub Pages
+    needs: update
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main   # includes the commit the update job just pushed
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
