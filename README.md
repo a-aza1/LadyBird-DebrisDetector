@@ -1,5 +1,8 @@
 # LadyBird-DebrisDetector
 
+VIEW THE DASHBOARD HERE:
+https://a-aza1.github.io/LadyBird-DebrisDetector/app/
+
 **Predicting where floating trash collects on Lady Bird Lake from wind and weather, so cleanups go where the trash is.**
 
 Trash on Lady Bird Lake in Austin, Texas, gathers in shoreline pockets, and the amount in any one pocket changes from day to day. LadyBird-DebrisDetector is a citizen-science field study testing a simple idea: **wind decides where floating trash ends up.** If that holds, volunteers can check the wind each morning and go straight to the pockets that are filling.
