@@ -49,7 +49,7 @@ A recorded deviation is fine. An unrecorded one makes the data unreliable.
 
 ### 7. Save and export
 
-Save the visit, then **Export CSV** and commit it to `data/visits.csv`. Rename the photos to `YYYY-MM-DD_<visit_id>_1.jpg`, `_2.jpg` and add them to `data/photos/`.
+Save the visit, then **Export CSV** and upload it to `data/visits.csv` in the repo. The logger reads that file, so a visit stays marked **NEW** until it is committed. Rename the photos to `YYYY-MM-DD_<visit_id>_1.jpg`, `_2.jpg` and add them to `data/photos/`.
 
 ## Trash scale
 
@@ -70,6 +70,8 @@ The Camp Mabry table shows wind as, for example, `SSE 8 G 20`:
 - `8` is the steady speed in mph;
 - `G 20` is a gust, which the study ignores;
 - `Calm` means no wind and counts as 0.
+
+Calm readings are common overnight and early in the morning. They count as 0 mph in the average and are left out when working out direction, so a few windy hours still set the direction. If the whole window is calm, choose **Calm** on the compass. The logger does this for you when you paste an all-calm table. The visit is then recorded with no direction rather than a made-up one. If the lake was visibly choppy while the station read calm, say so in the notes.
 
 The pocket opens toward the northeast (about 50°), so:
 

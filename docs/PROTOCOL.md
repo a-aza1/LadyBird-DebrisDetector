@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Protocol version** | 1.0 |
+| **Protocol version** | 1.2 (amended 2026-11-09; see amendment log) |
 | **Registered** | 2026-11-08, before the first observation |
 | **Study site** | Blunn Creek Delta, south shore of Lady Bird Lake, Austin, Texas |
 | **Site extent** | 30.25357, −97.74158 to 30.25266, −97.74071 (about 130 m of shoreline) |
@@ -48,7 +48,7 @@ alongshore component = v × cos((d + 180°) − 140°)   positive = pushes down-
 | **Loading** | onshore ≥ 4 mph | Trash pushed into the pocket |
 | **Clearing** | onshore ≤ −4 mph | Trash pulled away from the pocket |
 | **Along shore** | between −4 and 4 mph, speed ≥ 3 mph | Trash slides past along the shore |
-| **Calm** | speed < 3 mph | Little movement |
+| **Calm** | speed < 3 mph, or no main direction | Little movement |
 
 The 50° facing angle is an estimate from coordinates. If field observation shows it is wrong, the corrected value is recorded as an amendment, and every visit stores the angle in use at the time (`face_deg`).
 
@@ -137,6 +137,8 @@ If none of these hold, the pilot finds no evidence that wind drives accumulation
 | Visit records | `data/visits.csv` |
 | Photos | `data/photos/`, named `YYYY-MM-DD_<visit_id>_<n>.jpg` |
 | Data dictionary | [`data/README.md`](../data/README.md) |
+| Archived weather and river flow | `data/weather/`, updated daily by `.github/workflows/pipeline.yml` |
+| Latest analysis report | `analysis/results.md`, regenerated on every change |
 | Field logger | `app/index.html` |
 | Analysis | `analysis/analyze.py` |
 
@@ -149,3 +151,5 @@ River flow: USGS 08158000, Colorado River at Austin, https://waterdata.usgs.gov/
 | Date | Version | Change | Reason |
 |---|---|---|---|
 | 2026-11-08 | 1.0 | Protocol registered | — |
+| 2026-11-09 | 1.1 | Calm visits are recorded with a blank wind direction (`wind_from_compass` = `CALM`) and classed as calm. The field logger now reads `data/visits.csv` from the repo as the source of truth. | Before this change, a calm visit stored whichever direction the logger's compass was left on, recording a direction that was never observed. No analysis, hypothesis or decision criterion changed. |
+| 2026-11-09 | 1.2 | A GitHub Actions workflow now (a) validates every change to `data/visits.csv` and rejects edits to committed rows unless the commit is marked as a correction, (b) archives Camp Mabry hourly wind and precipitation and USGS 08158000 river flow daily to `data/weather/`, and (c) re-runs the analysis. The report gains a cross-check comparing each visit's entered wind with the archived hourly record. | The NWS 3-day page discards older observations, so archiving keeps the raw inputs available for anyone to recompute. The primary analysis still uses the entered wind values as pre-registered; the cross-check is reported alongside it, not in place of it. |

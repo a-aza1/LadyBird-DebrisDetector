@@ -17,11 +17,12 @@ import math
 import random
 import statistics
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CSV = ROOT / "data" / "visits.csv"
+ARCHIVE = ROOT / "data" / "weather" / "katt_hourly.csv"
 
 # Decision criteria from PROTOCOL.md section 9
 MIN_VISITS = 20
@@ -34,6 +35,8 @@ CLASSES = ["loading", "clearing", "alongshore", "calm"]
 
 
 def onshore(from_deg, mph, face):
+    if from_deg is None:  # calm: no prevailing direction, so no push into the pocket
+        return 0.0
     return mph * math.cos(math.radians(from_deg - face))
 
 
@@ -43,7 +46,7 @@ def alongshore(from_deg, mph, face):
 
 
 def wind_class(from_deg, mph, face):
-    if mph < 3:
+    if from_deg is None or mph < 3:
         return "calm"
     on = onshore(from_deg, mph, face)
     if on >= 4:
@@ -66,8 +69,9 @@ def load(path):
                     "visit_id": row["visit_id"],
                     "observed_at": datetime.fromisoformat(row["observed_at"]),
                     "rating": int(row["rating"]),
-                    "wind_from_deg": float(row["wind_from_deg"]),
-                    "wind_speed_mph": float(row["wind_speed_mph"]),
+                    # blank direction = calm, recorded without a direction (protocol 1.1)
+                    "wind_from_deg": float(row["wind_from_deg"]) if row["wind_from_deg"].strip() else None,
+                    "wind_speed_mph": float(row["wind_speed_mph"] or 0),
                     "face_deg": float(row.get("face_deg") or 50),
                     "rain_48h": (row.get("rain_48h") or "").strip() or "unknown",
                     "river_current": (row.get("river_current") or "").strip() or "unknown",
@@ -75,6 +79,7 @@ def load(path):
                     "days_since_cleaned": (
                         float(row["days_since_cleaned"]) if row.get("days_since_cleaned") else None
                     ),
+                    "window": int(float(row["wind_window_hours"])) if row.get("wind_window_hours") else None,
                 }
             except (KeyError, ValueError) as err:
                 print(f"Skipping row {row.get('visit_id', '?')}: {err}", file=sys.stderr)
@@ -150,6 +155,8 @@ def frontal_pairs(visits, max_gap_days=3):
     """
     pairs = []
     for a, b in zip(visits, visits[1:]):
+        if a["wind_from_deg"] is None or b["wind_from_deg"] is None:
+            continue  # a calm visit has no direction to compare
         gap = (b["observed_at"] - a["observed_at"]).total_seconds() / 86400
         southerly = 90 < a["wind_from_deg"] < 270
         northerly = b["wind_from_deg"] >= 270 or b["wind_from_deg"] <= 90
@@ -181,9 +188,77 @@ def analyse(visits, label):
     return {"n": n, "means": means, "rho": rho, "p": p, "lines": lines}
 
 
+def load_archive(path=None):
+    """Hourly Camp Mabry observations saved by analysis/fetch_weather.py, keyed by local time."""
+    path = path or ARCHIVE
+    if not path.exists():
+        return []
+    rows = []
+    with open(path, newline="", encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            try:
+                rows.append((
+                    datetime.fromisoformat(r["valid_local"]),
+                    float(r["wind_from_deg"]) if r["wind_from_deg"] else None,
+                    float(r["wind_speed_mph"]) if r["wind_speed_mph"] else None,
+                ))
+            except (KeyError, ValueError):
+                continue
+    return rows
+
+
+def archived_wind(archive, end, hours):
+    """Mean speed (calm = 0) and speed-weighted mean direction over the window, as the logger computes it."""
+    start = end - timedelta(hours=hours)
+    obs = [(d, s) for t, d, s in archive if start < t <= end and s is not None]
+    covered_hours = len({t.replace(minute=0) for t, _, s in archive if start < t <= end and s is not None})
+    if covered_hours < hours * 0.5:
+        return None
+    speed = statistics.fmean(s for _, s in obs)
+    x = sum(math.sin(math.radians(d)) * s for d, s in obs if d is not None)
+    y = sum(math.cos(math.radians(d)) * s for d, s in obs if d is not None)
+    direction = (math.degrees(math.atan2(x, y)) + 360) % 360 if (x or y) else None
+    return direction, speed
+
+
+def wind_cross_check(visits):
+    """Compare the wind entered at each visit with the archived hourly record (protocol 1.2).
+
+    The primary analysis keeps using the entered values, as pre-registered; this section shows
+    whether they agree with the raw observations, so a reader can judge the inputs.
+    """
+    out = ["## Wind cross-check against the archive", ""]
+    archive = load_archive()
+    if not archive:
+        out += ["No archived wind data yet. The daily GitHub Action fills `data/weather/katt_hourly.csv`.", ""]
+        return out
+    rows, agree, diffs = [], 0, []
+    for v in visits:
+        hours = v.get("window") or 24
+        got = archived_wind(archive, v["observed_at"], hours)
+        if got is None:
+            rows.append(f"| {v['visit_id']} | {v['class']} | – | {v['onshore']:.1f} | – | not enough archived hours |")
+            continue
+        direction, speed = got
+        a_on = onshore(direction, speed, v["face_deg"])
+        a_class = wind_class(direction, speed, v["face_deg"])
+        agree += a_class == v["class"]
+        diffs.append(abs(a_on - v["onshore"]))
+        rows.append(f"| {v['visit_id']} | {v['class']} | {a_class} | {v['onshore']:.1f} | {a_on:.1f} | {hours} h |")
+    checked = len(diffs)
+    if checked:
+        out.append(f"Wind class matched the archive on **{agree} of {checked}** visits; "
+                   f"onshore wind differed by {statistics.fmean(diffs):.1f} mph on average.")
+        out.append("")
+    out += ["| Visit | Entered class | Archive class | Entered onshore mph | Archive onshore mph | Window |",
+            "|---|---|---|---:|---:|---|"] + rows + [""]
+    return out
+
+
 def report(visits):
     out = ["# LadyBird-DebrisDetector analysis report", ""]
-    out.append(f"Generated {datetime.now().strftime('%Y-%m-%d %H:%M')} from {len(visits)} visits.")
+    if visits:
+        out.append(f"Based on {len(visits)} visits, {visits[0]['observed_at']:%Y-%m-%d} to {visits[-1]['observed_at']:%Y-%m-%d}.")
     out.append("")
     if not visits:
         out.append("No usable visits yet. Add rows to `data/visits.csv`.")
@@ -223,6 +298,8 @@ def report(visits):
     else:
         out.append("No south-to-north wind shifts between consecutive visits yet.")
     out.append("")
+
+    out += wind_cross_check(visits)
 
     # Decision criteria
     loading_n, loading_mean = main["means"]["loading"]

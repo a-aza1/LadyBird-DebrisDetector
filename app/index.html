@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>DebrisDetector Field Logger</title>
-<meta name="description" content="Field logger for the LadyBird-DebrisDetector study: records trash ratings and wind conditions at a Lady Bird Lake shoreline pocket.">
+<title>Blunn Creek Delta Trash Log</title>
+<meta name="description" content="Field logger for the LadyBird-DebrisDetector study: reads how wind hits the Blunn Creek Delta pocket and logs each cleanup visit.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
-/* Layout: one field-notebook column, in protocol order: observe, conditions, cleanup, then results. */
+/* Layout: one narrow field-notebook column; wind read on top, trash scale, log form, then what the log shows. */
 :root{
   --bg:#eef2f0; --panel:#ffffff; --ink:#17282a; --muted:#5b6d6e; --line:#cfd9d7;
   --water:#cfe3e4; --water-ink:#2f6f74; --shore:#b9ab8f;
@@ -30,26 +30,18 @@ body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--body)}
 [hidden]{display:none!important}
 img{max-width:100%}
 .wrap{max-width:760px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
-header h1{font:700 2.6rem/1 var(--display);letter-spacing:.01em;margin:4px 0 0;text-wrap:balance}
+header h1{font:700 2.6rem/1 var(--display);letter-spacing:.01em;margin:0;text-wrap:balance}
 header p{margin:8px 0 0;color:var(--muted);max-width:62ch}
 .coords{font:400 .78rem var(--mono);color:var(--muted);letter-spacing:.02em}
-section,details.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:16px;min-width:0}
-details.panel{display:block}
-details.panel>summary{cursor:pointer;font:600 1.3rem/1.1 var(--display);letter-spacing:.02em}
-details.panel[open]>summary{margin-bottom:16px}
-details.panel>.inner{display:grid;gap:16px}
+section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:16px;min-width:0}
 h2{font:600 1.45rem/1.1 var(--display);margin:0;letter-spacing:.02em}
-.step{display:grid;gap:14px;padding-top:14px;border-top:1px solid var(--line)}
-.step:first-of-type{border-top:0;padding-top:0}
-.step h3{margin:0;font:700 1.1rem/1.1 var(--display);letter-spacing:.03em;display:flex;gap:10px;align-items:baseline}
-.step h3 span{font:600 .75rem var(--mono);color:var(--panel);background:var(--ink);border-radius:4px;padding:2px 6px}
 .label{font:600 .72rem var(--body);text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
 .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
 @media (max-width:620px){.two{grid-template-columns:1fr}}
 .compass{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .compass button,.chips button{font:600 .85rem var(--mono);padding:8px 0;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:6px;cursor:pointer}
 .compass button[aria-pressed="true"],.chips button[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
-button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible,label:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .speed{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
 input[type=range]{width:100%;accent-color:var(--accent)}
 .num{font:600 1rem var(--mono);font-variant-numeric:tabular-nums}
@@ -59,7 +51,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .figure svg{width:100%;height:auto;display:block}
 .links{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.88rem}
 .links a{color:var(--water-ink)}
-form{display:grid;gap:18px}
+form{display:grid;gap:14px}
 .row{display:grid;gap:6px}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chips button{padding:8px 12px;font-family:var(--body)}
@@ -71,30 +63,29 @@ textarea{min-height:64px;resize:vertical}
 @media (max-width:520px){.grid3{grid-template-columns:1fr 1fr}}
 .check{display:flex;gap:8px;align-items:center;font-size:.92rem}
 .check input{width:18px;height:18px;accent-color:var(--accent)}
-.primary,.secondary{font:600 .95rem var(--body);border-radius:8px;padding:11px 16px;cursor:pointer}
-.primary{background:var(--accent);color:#fff;border:0;justify-self:start}
-.secondary{background:transparent;color:var(--ink);border:1px solid var(--line)}
-.primary:disabled{opacity:.5;cursor:default}
+.primary{font:600 1rem var(--body);background:var(--accent);color:#fff;border:0;border-radius:8px;padding:12px 18px;cursor:pointer;justify-self:start}
+.secondary{font:600 .9rem var(--body);background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 14px;cursor:pointer}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
 .status{font-size:.88rem;color:var(--muted);min-height:1.2em}
 .hint{font-size:.85rem;color:var(--muted)}
-.callout{font-size:.88rem;border-left:3px solid var(--accent);padding:2px 0 2px 12px;color:var(--ink)}
 .summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 @media (max-width:520px){.summary{grid-template-columns:1fr 1fr}}
 .stat{border-top:3px solid var(--sc);padding-top:8px}
 .stat .big{font:700 1.9rem/1 var(--display);font-variant-numeric:tabular-nums}
 .stat small{display:block;color:var(--muted);font-size:.8rem}
 .tablewrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;font-size:.86rem;font-variant-numeric:tabular-nums}
+table{border-collapse:collapse;width:100%;font-size:.88rem;font-variant-numeric:tabular-nums}
 th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
 th{font:600 .7rem var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
 td.note{white-space:normal;min-width:160px;color:var(--muted)}
-td.mono{font-family:var(--mono);font-size:.78rem}
 .dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:6px}
-.flag{font:600 .7rem var(--mono);color:var(--accent)}
+.flag{font:600 .68rem var(--mono);color:var(--accent);margin-left:6px}
+.flag.new{color:var(--water-ink)}
 .del{background:none;border:0;color:var(--muted);cursor:pointer;font-size:.8rem;text-decoration:underline}
 .empty{color:var(--muted);font-size:.92rem;margin:0}
 .legend{display:flex;gap:10px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);align-items:center}
+.facing{display:flex;gap:8px;align-items:center;font-size:.85rem;color:var(--muted);flex-wrap:wrap}
+.facing input{width:80px}
 .calc{display:grid;gap:12px;padding:14px;border:1px dashed var(--line);border-radius:8px;background:var(--bg)}
 .calc textarea{background:var(--panel);min-height:70px;font:.8rem/1.4 var(--mono)}
 .calcout{font-size:.92rem;min-height:1.2em}
@@ -104,88 +95,83 @@ td.mono{font-family:var(--mono);font-size:.78rem}
 .lvl{display:grid;gap:6px;align-content:start;border-top:4px solid var(--lc);padding-top:10px}
 @media (max-width:680px){.lvl{grid-template-columns:110px 1fr;column-gap:14px}.lvl svg{grid-row:span 3}}
 .lvl svg{width:100%;height:auto;display:block;border-radius:6px}
-.lvl h4{margin:0;font:700 1.15rem/1.1 var(--display);letter-spacing:.02em}
-.lvl h4 span{font-family:var(--mono);font-size:.95rem;margin-right:6px}
+.lvl h3{margin:0;font:700 1.15rem/1.1 var(--display);letter-spacing:.02em}
+.lvl h3 span{font-family:var(--mono);font-size:.95rem;margin-right:6px}
 .lvl p{margin:0;font-size:.84rem;color:var(--muted)}
 .lvl .bags{font:600 .75rem var(--mono);color:var(--ink)}
-.facing{display:flex;gap:8px;align-items:center;font-size:.85rem;color:var(--muted);flex-wrap:wrap}
-.facing input{width:90px}
-input[type=file]{font-size:.88rem;max-width:100%}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="coords">Site BCD-01 · 30.25357, −97.74158 → 30.25266, −97.74071 · Lady Bird Lake, Austin TX</div>
-    <h1>DebrisDetector Field Logger</h1>
-    <p>Records one visit at a time to the Blunn Creek Delta pocket, in the order the <a href="../docs/PROTOCOL.md">study protocol</a> requires: observe the trash first, then look up the conditions. Visits are stored in this browser. Export them to <code>data/visits.csv</code> to add them to the dataset.</p>
+    <div class="coords">30.25357, −97.74158 → 30.25266, −97.74071 · south shore, Lady Bird Lake</div>
+    <h1>Blunn Creek Delta Trash Log</h1>
+    <p>This stretch of south shore faces open water to the northeast. Wind from that side pushes floating trash in; wind from the southwest pulls it back out. Log each visit and, after a few weeks, the pattern for this spot will show up below.</p>
   </header>
 
-  <details class="panel">
-    <summary>Trash scale</summary>
-    <div class="inner">
-      <p class="empty">Judge the whole pocket, about 130 meters of shore, before you pick anything up. Count what you can see floating or stranded at the waterline. If you're torn between two levels, use the bag count to decide.</p>
-      <div class="scale" id="scale"></div>
+  <section aria-labelledby="h-read">
+    <h2 id="h-read">Read today's wind</h2>
+    <div class="two">
+      <div style="display:grid;gap:14px;min-width:0">
+        <div class="row"><span class="label">Wind coming from</span><div class="compass" id="compass"></div></div>
+        <div class="row"><span class="label">Steady speed (mph)</span>
+          <div class="speed"><input type="range" id="spd" min="0" max="30" step="1" value="12" aria-label="Wind speed in mph"><span class="num" id="spdv">12</span></div>
+        </div>
+        <div class="verdict" id="verdict"></div>
+      </div>
+      <div class="figure" id="fig"></div>
     </div>
-  </details>
+    <div class="row"><span class="label">Check the real numbers</span>
+      <div class="links">
+        <a href="https://forecast.weather.gov/data/obhistory/KATT.html" target="_blank" rel="noopener">Camp Mabry wind, past 3 days</a>
+        <a href="https://waterdata.usgs.gov/monitoring-location/USGS-08158000/" target="_blank" rel="noopener">River flow below Longhorn Dam</a>
+        <a href="https://hydromet.lcra.org/" target="_blank" rel="noopener">LCRA rain gauges</a>
+      </div>
+    </div>
+    <div class="facing"><label for="face">Shore opening faces</label><input type="number" id="face" min="0" max="359" value="50"><span>° (adjust if it looks off on the ground)</span></div>
+  </section>
+
+  <section aria-labelledby="h-scale">
+    <h2 id="h-scale">Trash scale</h2>
+    <p class="empty">Judge the whole pocket, about 130 meters of shore, before you pick anything up. Count what you can see floating or stranded at the waterline. When you're torn between two levels, use the bag count as the tiebreaker.</p>
+    <div class="scale" id="scale"></div>
+  </section>
 
   <section aria-labelledby="h-log">
     <h2 id="h-log">Log a visit</h2>
     <form id="form" novalidate>
-      <div class="step">
-        <h3><span>1</span>Observe the pocket</h3>
-        <p class="callout">Take your photos and choose a rating before you look at any wind data, and before you clean.</p>
-        <div class="grid3">
-          <div class="row"><label class="label" for="when">When</label><input type="datetime-local" id="when"></div>
-          <div class="row"><label class="label" for="observer">Observer</label><input type="text" id="observer" maxlength="40" placeholder="Initials"></div>
-          <div class="row"><label class="label" for="photoCount">Photos taken</label><input type="number" id="photoCount" min="0" max="20" value="2"></div>
-        </div>
-        <div class="row"><span class="label">Trash rating</span>
-          <div class="chips rating" id="rating"></div>
-          <span class="hint" id="ratingHint">Open the trash scale above if you need a reminder of each level.</span>
-        </div>
-        <div class="grid3">
-          <div class="row"><label class="label" for="since">Days since last cleaned</label><input type="number" id="since" min="0" max="365" placeholder="Unknown"></div>
-        </div>
+      <div class="row"><span class="label">How much trash is in the pocket?</span>
+        <div class="chips rating" id="rating"></div>
+        <span class="hint" id="ratingHint">Pick a level. The trash scale above shows what each one looks like.</span>
       </div>
-
-      <div class="step">
-        <h3><span>2</span>Record the conditions</h3>
-        <div class="links">
-          <a href="https://forecast.weather.gov/data/obhistory/KATT.html" target="_blank" rel="noopener">Camp Mabry wind, past 3 days</a>
-          <a href="https://waterdata.usgs.gov/monitoring-location/USGS-08158000/" target="_blank" rel="noopener">River flow below Longhorn Dam</a>
-          <a href="https://hydromet.lcra.org/" target="_blank" rel="noopener">LCRA rain gauges</a>
+      <div class="calc">
+        <div class="row"><label class="label" for="paste">Fill wind from Camp Mabry</label>
+          <span class="hint">Open the Camp Mabry link above, select the table (or just the Wind column), copy, and paste it here.</span>
+          <textarea id="paste" placeholder="Paste the table here"></textarea>
         </div>
-        <div class="calc">
-          <div class="row"><label class="label" for="paste">Fill wind from Camp Mabry</label>
-            <span class="hint">Open the Camp Mabry link, select the table (or just the Wind column), copy, and paste it here.</span>
-            <textarea id="paste" placeholder="Paste the table here"></textarea>
-          </div>
-          <div class="row"><span class="label">Use the last</span><div class="chips" id="hours"></div></div>
-          <div class="calcout" id="calcout" role="status"></div>
-        </div>
-        <div class="row"><span class="label">Main wind direction (coming from)</span><div class="compass" id="lcompass"></div></div>
-        <div class="grid3">
-          <div class="row"><label class="label" for="lspd">Avg speed mph</label><input type="number" id="lspd" min="0" max="60" value="10"></div>
-        </div>
-        <div class="row"><span class="label">Rain in the last 48 hours</span><div class="chips" id="rain"></div></div>
-        <div class="row"><span class="label">River current</span><div class="chips" id="flow"></div></div>
+        <div class="row"><span class="label">Use the last</span><div class="chips" id="hours"></div></div>
+        <div class="calcout" id="calcout" role="status"></div>
       </div>
-
-      <div class="step">
-        <h3><span>3</span>Cleanup and deviations</h3>
-        <label class="check"><input type="checkbox" id="cleaned"> I cleaned the pocket on this visit</label>
-        <div class="grid3">
-          <div class="row"><label class="label" for="bags">Bags collected</label><input type="number" id="bags" min="0" max="99" value="0"></div>
-        </div>
-        <label class="check"><input type="checkbox" id="deviation"> Something differed from the protocol</label>
-        <div class="row" id="devRow" hidden><label class="label" for="devReason">What was different</label>
-          <input type="text" id="devReason" maxlength="200" placeholder="e.g. Visited at 2 p.m.; checked wind before rating; crew had cleaned">
-        </div>
-        <div class="row"><label class="label" for="notes">Notes</label><textarea id="notes" placeholder="Kind of trash, where it piled up, anything unusual"></textarea></div>
+      <div class="row"><span class="label">Main wind over the last day</span><div class="compass" id="lcompass"></div></div>
+      <div class="grid3">
+        <div class="row"><label class="label" for="lspd">Avg speed mph</label><input type="number" id="lspd" min="0" max="60" value="10"></div>
+        <div class="row"><label class="label" for="bags">Bags collected</label><input type="number" id="bags" min="0" max="99" value="0"></div>
+        <div class="row"><label class="label" for="when">When</label><input type="datetime-local" id="when"></div>
       </div>
-
+      <div class="row"><span class="label">Rain in the last 48 hours</span><div class="chips" id="rain"></div></div>
+      <div class="row"><span class="label">River current</span><div class="chips" id="flow"></div></div>
+      <div class="grid3">
+        <div class="row"><label class="label" for="since">Days since last cleaned</label><input type="number" id="since" min="0" max="365" placeholder="Unknown"></div>
+        <div class="row"><label class="label" for="photoCount">Photos taken</label><input type="number" id="photoCount" min="0" max="20" value="2"></div>
+        <div class="row"><label class="label" for="observer">Observer</label><input type="text" id="observer" maxlength="40" placeholder="Initials"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="cleaned"> I cleaned the pocket on this visit</label>
+      <label class="check"><input type="checkbox" id="deviation"> Something differed from the protocol</label>
+      <div class="row" id="devRow" hidden><label class="label" for="devReason">What was different</label>
+        <input type="text" id="devReason" maxlength="200" placeholder="e.g. Visited at 2 p.m.; checked wind before rating; crew had cleaned">
+      </div>
+      <div class="row"><label class="label" for="notes">Notes</label><textarea id="notes" placeholder="What kind of trash, where it piled up, anything unusual"></textarea></div>
       <button class="primary" id="save" type="submit">Save visit</button>
       <div class="status" id="status" role="status"></div>
     </form>
@@ -197,7 +183,7 @@ input[type=file]{font-size:.88rem;max-width:100%}
     <div class="two">
       <div class="figure" id="polar"></div>
       <div style="display:grid;gap:10px;align-content:start">
-        <p class="empty">Each dot is a visit, placed by the direction the wind came from. Farther from the center means stronger wind; warmer color means more trash. If the warm dots cluster on the water side of the dashed shoreline, wind is driving this pocket.</p>
+        <p class="empty">Each dot is a visit, placed by the direction the wind came from. Farther from the center means stronger wind. Warmer color means more trash. If the warm dots cluster on the water side of the shoreline, wind is driving this pocket.</p>
         <div class="legend"><span>Trash:</span>
           <span><i class="dot" style="background:var(--r1)"></i>1</span><span><i class="dot" style="background:var(--r2)"></i>2</span><span><i class="dot" style="background:var(--r3)"></i>3</span><span><i class="dot" style="background:var(--r4)"></i>4</span><span><i class="dot" style="background:var(--r5)"></i>5</span>
         </div>
@@ -208,79 +194,116 @@ input[type=file]{font-size:.88rem;max-width:100%}
       <div class="actions">
         <button class="secondary" type="button" id="exportCsv">Export CSV</button>
         <button class="secondary" type="button" id="exportJson">Export backup (JSON)</button>
-        <label class="secondary" for="importFile" style="display:inline-block">Import CSV or JSON</label>
+        <label class="secondary" for="importFile" tabindex="0">Import CSV or JSON</label>
         <input type="file" id="importFile" accept=".csv,.json,text/csv,application/json" hidden>
       </div>
-      <span class="hint">Visits live only in this browser until you export them. Export after each visit and commit the CSV to <code>data/visits.csv</code>. Name photos <code>YYYY-MM-DD_&lt;visit id&gt;_1.jpg</code> and put them in <code>data/photos/</code>.</span>
+      <p class="hint" id="sourceNote" style="margin:0" role="status"></p>
+      <span class="hint">The map and table read <code>data/visits.csv</code> from the repo. New visits wait in this browser, marked <b>NEW</b>, until you export the CSV and upload it to <code>data/visits.csv</code>. Committed visits can only be changed in the repo file.</span>
+      <p class="hint" id="storageNote" hidden style="margin:0;color:var(--accent)">This browser isn't letting the page save, so visits disappear when you close it. Open the logger from your GitHub Pages link in a normal (not private) browser tab.</p>
       <div class="status" id="dataStatus" role="status"></div>
     </div>
   </section>
-
-  <details class="panel">
-    <summary>Plan a visit</summary>
-    <div class="inner">
-      <p class="empty">Use this to decide when to go, never during a visit before you've rated the trash.</p>
-      <div class="two">
-        <div style="display:grid;gap:14px;min-width:0">
-          <div class="row"><span class="label">Wind coming from</span><div class="compass" id="compass"></div></div>
-          <div class="row"><span class="label">Steady speed (mph)</span>
-            <div class="speed"><input type="range" id="spd" min="0" max="30" step="1" value="12" aria-label="Wind speed in mph"><span class="num" id="spdv">12</span></div>
-          </div>
-          <div class="verdict" id="verdict"></div>
-        </div>
-        <div class="figure" id="fig"></div>
-      </div>
-      <div class="facing"><label for="face">Shore opening faces</label><input type="number" id="face" min="0" max="359" value="50"><span>° (protocol value is 50°; record any change as an amendment)</span></div>
-    </div>
-  </details>
 </div>
 
 <script>
 "use strict";
-const PROTOCOL_VERSION="1.0", SITE_ID="BCD-01", STORE_KEY="ladybird-debris.visits.v1";
+const PROTOCOL_VERSION="1.2", SITE_ID="BCD-01", STORE_KEY="ladybird-debris.visits.v1", DATA_URL="../data/visits.csv";
 const DIRS=["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
 const deg=i=>i*22.5, rad=d=>d*Math.PI/180;
 const $=id=>document.getElementById(id);
-let FACE=50;
-const SHORE=()=>(FACE+90)%360;
+let FACE=50; // compass bearing the pocket opens toward (water side)
+const SHORE=()=>(FACE+90)%360; // shoreline bearing, down-lake direction
 const state={readDir:0,readSpd:12,logDir:0,rating:null,rain:"none",flow:"still",hours:24};
-let visits=[];
+// committed = rows read from data/visits.csv in the repo (the source of truth)
+// pending   = new visits saved in this browser that are not in the repo file yet
+let committed=[], pending=[], visits=[], repoLoaded=false;
 
 /* ---------- storage ---------- */
-function load(){try{const r=localStorage.getItem(STORE_KEY);visits=r?JSON.parse(r):[]}catch(_){visits=[]}}
-function persist(){try{localStorage.setItem(STORE_KEY,JSON.stringify(visits));return true}catch(_){return false}}
+function loadPending(){try{const r=localStorage.getItem(STORE_KEY);pending=r?JSON.parse(r):[]}catch(_){pending=[]}}
+function persist(){try{localStorage.setItem(STORE_KEY,JSON.stringify(pending));return true}catch(_){return false}}
+function merge(){
+  const ids=new Set(committed.map(v=>v.visit_id));
+  pending=pending.filter(v=>!ids.has(v.visit_id)); // once a visit is in the repo file, the browser copy is dropped
+  visits=[...committed.map(v=>({...v,_committed:true})),...pending];
+}
+async function loadCommitted(){
+  try{
+    const r=await fetch(DATA_URL,{cache:"no-store"});
+    if(!r.ok) throw new Error(String(r.status));
+    committed=parseCsv(await r.text()).map(normalize).filter(Boolean);
+    repoLoaded=true;
+  }catch(_){committed=[];repoLoaded=false}
+}
 
 /* ---------- wind geometry ---------- */
-function components(fromDeg,mph,face){
-  const f=face??FACE, shore=(f+90)%360;
-  return {on:mph*Math.cos(rad(fromDeg-f)), along:mph*Math.cos(rad((fromDeg+180)-shore))};
-}
-function classify(fromDeg,mph,face){
-  const {on,along}=components(fromDeg,mph,face);
+function classify(fromDeg,mph){
+  if(fromDeg===null||fromDeg===undefined) return {key:"calm",name:"Calm",color:"var(--muted)",on:0,along:0};
+  const on=mph*Math.cos(rad(fromDeg-FACE));
+  const along=mph*Math.cos(rad((fromDeg+180)-SHORE()));
   if(mph<3) return {key:"calm",name:"Calm",color:"var(--muted)",on,along};
   if(on>=4) return {key:"loading",name:"Loading",color:"var(--load)",on,along};
   if(on<=-4) return {key:"clearing",name:"Clearing",color:"var(--clear)",on,along};
   return {key:"alongshore",name:"Along shore",color:"var(--along)",on,along};
 }
+const CLASS_LOOK={loading:["Loading","var(--load)"],clearing:["Clearing","var(--clear)"],alongshore:["Along shore","var(--along)"],calm:["Calm","var(--muted)"]};
 function describe(c,mph){
   if(c.key==="calm") return "Too light to move much. Whatever drifted in recently is probably still sitting there.";
   const o=Math.abs(c.on).toFixed(0);
-  if(c.key==="loading") return `Of this ${mph} mph wind, about ${o} mph pushes straight into the pocket. Expect floating trash to pile up, worst after a steady night of it.`;
-  if(c.key==="clearing") return `Of this ${mph} mph wind, about ${o} mph pushes straight away from the shore. Loose trash gets pulled back out.`;
-  return c.along>0?"Wind runs along the shore toward I-35, sliding trash past this spot.":"Wind runs along the shore toward Congress, sliding trash past this spot.";
+  if(c.key==="loading") return `Of this ${mph} mph wind, about ${o} mph pushes straight into the pocket. The rest glances along the shore. Expect floating trash to pile up here, worst after a steady night of it.`;
+  if(c.key==="clearing") return `Of this ${mph} mph wind, about ${o} mph pushes straight away from the shore. Loose trash gets pulled back out; only what's tangled in vegetation stays.`;
+  return c.along>0 ? "Wind runs along the shore toward I-35, sliding trash past this spot and down-lake. Snags and the creek mouth can still catch some."
+                   : "Wind runs along the shore toward Congress, sliding trash up-lake past this spot. Snags and the creek mouth can still catch some.";
 }
 
 /* ---------- controls ---------- */
-function compass(el,key,onPick){
+function compass(el,key,onPick,withCalm){
   el.innerHTML="";
   DIRS.forEach((d,i)=>{const b=document.createElement("button");b.type="button";b.textContent=d;b.id=`${el.id}-${d}`;
-    b.setAttribute("aria-pressed",state[key]===deg(i));b.onclick=()=>{state[key]=deg(i);compass(el,key,onPick);onPick&&onPick()};el.appendChild(b)});
+    b.setAttribute("aria-pressed",state[key]===deg(i));b.onclick=()=>{state[key]=deg(i);compass(el,key,onPick,withCalm);onPick&&onPick()};el.appendChild(b)});
+  if(withCalm){
+    const b=document.createElement("button");b.type="button";b.textContent="Calm (no main direction)";b.id=`${el.id}-CALM`;
+    b.style.gridColumn="span 4";b.style.fontFamily="var(--body)";
+    b.setAttribute("aria-pressed",state[key]===null);b.onclick=()=>{state[key]=null;compass(el,key,onPick,withCalm);onPick&&onPick()};el.appendChild(b);
+  }
 }
 function chips(el,key,opts,onPick){
   el.innerHTML="";
   opts.forEach(([v,l,c])=>{const b=document.createElement("button");b.type="button";b.textContent=l;b.id=`${el.id}-${v}`;
     if(c) b.style.setProperty("--rc",c);
     b.setAttribute("aria-pressed",state[key]===v);b.onclick=()=>{state[key]=v;chips(el,key,opts,onPick);onPick&&onPick()};el.appendChild(b)});
+}
+
+/* ---------- plan view ---------- */
+function plan(fromDeg,mph,c){
+  const S=260,C=S/2,R=110;
+  const sh=rad(SHORE()), fx=Math.sin(sh), fy=-Math.cos(sh);
+  const wx=Math.sin(rad(FACE)), wy=-Math.cos(rad(FACE));
+  const p=(x,y)=>`${(C+x).toFixed(1)},${(C+y).toFixed(1)}`;
+  const a=p(fx*200,fy*200), b=p(-fx*200,-fy*200), w1=p(fx*200+wx*200,fy*200+wy*200), w2=p(-fx*200+wx*200,-fy*200+wy*200);
+  const t=rad(fromDeg), ux=Math.sin(t), uy=-Math.cos(t);
+  const L=mph<3?0:28+Math.min(mph,30)*2.2;
+  const sx=ux*(R-8), sy=uy*(R-8), ex=sx-ux*L, ey=sy-uy*L;
+  const head=`${p(ex,ey)} ${p(ex+ux*12+uy*7,ey+uy*12-ux*7)} ${p(ex+ux*12-uy*7,ey+uy*12+ux*7)}`;
+  const lab=(d,txt)=>{const r=R+14,x=Math.sin(rad(d))*r,y=-Math.cos(rad(d))*r;return `<text x="${C+x}" y="${C+y+4}" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="var(--mono)">${txt}</text>`};
+  return `<svg viewBox="0 0 ${S} ${S}" role="img" aria-label="Plan view of the shore with today's wind">
+    <defs><clipPath id="cp"><circle cx="${C}" cy="${C}" r="${R}"/></clipPath></defs>
+    <circle cx="${C}" cy="${C}" r="${R}" fill="var(--shore)" opacity=".35"/>
+    <polygon points="${a} ${w1} ${w2} ${b}" fill="var(--water)" clip-path="url(#cp)"/>
+    <line x1="${C+fx*R}" y1="${C+fy*R}" x2="${C-fx*R}" y2="${C-fy*R}" stroke="var(--shore)" stroke-width="4" stroke-linecap="round"/>
+    <text x="${C+wx*52}" y="${C+wy*52+4}" text-anchor="middle" font-size="12" fill="var(--water-ink)" font-family="var(--body)" font-weight="600">lake</text>
+    <text x="${C-wx*52}" y="${C-wy*52+4}" text-anchor="middle" font-size="12" fill="var(--muted)" font-family="var(--body)">shore</text>
+    <circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="var(--line)"/>
+    ${lab(0,"N")}${lab(90,"E")}${lab(180,"S")}${lab(270,"W")}
+    ${L?`<line x1="${C+sx}" y1="${C+sy}" x2="${C+ex}" y2="${C+ey}" stroke="${c.color}" stroke-width="4" stroke-linecap="round"/><polygon points="${head}" fill="${c.color}"/>`:""}
+    <circle cx="${C}" cy="${C}" r="5" fill="var(--accent)"/>
+  </svg>`;
+}
+function renderRead(){
+  $("spdv").textContent=state.readSpd;
+  const c=classify(state.readDir,state.readSpd);
+  const v=$("verdict"); v.style.setProperty("--v",c.color);
+  v.innerHTML=`<b>${c.name}</b><span>${describe(c,state.readSpd)}</span>`;
+  $("fig").innerHTML=plan(state.readDir,state.readSpd,c);
 }
 
 /* ---------- trash scale ---------- */
@@ -311,77 +334,60 @@ function scaleSvg(level){
 }
 function renderScale(){
   $("scale").innerHTML=SCALE.map(l=>`<div class="lvl" style="--lc:${RC[l.n-1]}">${scaleSvg(l.n)}
-    <h4><span>${l.n}</span>${l.name}</h4><p>${l.desc}</p><div class="bags">${l.pieces} · ${l.bags}</div></div>`).join("");
+    <h3><span>${l.n}</span>${l.name}</h3><p>${l.desc}</p><div class="bags">${l.pieces} · ${l.bags}</div></div>`).join("");
 }
 function ratingChips(){
   chips($("rating"),"rating",SCALE.map(l=>[l.n,String(l.n),RC[l.n-1]]),()=>{
     const l=SCALE[state.rating-1];$("ratingHint").textContent=`${l.n} · ${l.name}: ${l.pieces}, ${l.bags.toLowerCase()}.`});
 }
 
-/* ---------- plan view & polar plot ---------- */
-function plan(fromDeg,mph,c){
-  const S=260,C=S/2,R=110;
-  const sh=rad(SHORE()),fx=Math.sin(sh),fy=-Math.cos(sh),wx=Math.sin(rad(FACE)),wy=-Math.cos(rad(FACE));
-  const p=(x,y)=>`${(C+x).toFixed(1)},${(C+y).toFixed(1)}`;
-  const a=p(fx*200,fy*200),b=p(-fx*200,-fy*200),w1=p(fx*200+wx*200,fy*200+wy*200),w2=p(-fx*200+wx*200,-fy*200+wy*200);
-  const t=rad(fromDeg),ux=Math.sin(t),uy=-Math.cos(t);
-  const L=mph<3?0:28+Math.min(mph,30)*2.2;
-  const sx=ux*(R-8),sy=uy*(R-8),ex=sx-ux*L,ey=sy-uy*L;
-  const head=`${p(ex,ey)} ${p(ex+ux*12+uy*7,ey+uy*12-ux*7)} ${p(ex+ux*12-uy*7,ey+uy*12+ux*7)}`;
-  const lab=(d,txt)=>{const r=R+14,x=Math.sin(rad(d))*r,y=-Math.cos(rad(d))*r;return `<text x="${C+x}" y="${C+y+4}" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="var(--mono)">${txt}</text>`};
-  return `<svg viewBox="0 0 ${S} ${S}" role="img" aria-label="Plan view of the shore with the selected wind">
-    <defs><clipPath id="cp"><circle cx="${C}" cy="${C}" r="${R}"/></clipPath></defs>
-    <circle cx="${C}" cy="${C}" r="${R}" fill="var(--shore)" opacity=".35"/>
-    <polygon points="${a} ${w1} ${w2} ${b}" fill="var(--water)" clip-path="url(#cp)"/>
-    <line x1="${C+fx*R}" y1="${C+fy*R}" x2="${C-fx*R}" y2="${C-fy*R}" stroke="var(--shore)" stroke-width="4" stroke-linecap="round"/>
-    <text x="${C+wx*52}" y="${C+wy*52+4}" text-anchor="middle" font-size="12" fill="var(--water-ink)" font-family="var(--body)" font-weight="600">lake</text>
-    <text x="${C-wx*52}" y="${C-wy*52+4}" text-anchor="middle" font-size="12" fill="var(--muted)" font-family="var(--body)">shore</text>
-    <circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="var(--line)"/>
-    ${lab(0,"N")}${lab(90,"E")}${lab(180,"S")}${lab(270,"W")}
-    ${L?`<line x1="${C+sx}" y1="${C+sy}" x2="${C+ex}" y2="${C+ey}" stroke="${c.color}" stroke-width="4" stroke-linecap="round"/><polygon points="${head}" fill="${c.color}"/>`:""}
-    <circle cx="${C}" cy="${C}" r="5" fill="var(--accent)"/></svg>`;
-}
-function renderRead(){
-  $("spdv").textContent=state.readSpd;
-  const c=classify(state.readDir,state.readSpd);
-  const v=$("verdict");v.style.setProperty("--v",c.color);
-  v.innerHTML=`<b>${c.name}</b><span>${describe(c,state.readSpd)}</span>`;
-  $("fig").innerHTML=plan(state.readDir,state.readSpd,c);
-}
+/* ---------- results ---------- */
 function polar(){
-  const S=300,C=S/2,R=125,max=25,rr=m=>Math.min(m,max)/max*R;
-  const sh=rad(SHORE()),fx=Math.sin(sh),fy=-Math.cos(sh),wx=Math.sin(rad(FACE)),wy=-Math.cos(rad(FACE));
+  const S=300,C=S/2,R=125,max=25;
+  const rr=m=>Math.min(m,max)/max*R;
+  const sh=rad(SHORE()), fx=Math.sin(sh), fy=-Math.cos(sh), wx=Math.sin(rad(FACE)), wy=-Math.cos(rad(FACE));
   const p=(x,y)=>`${(C+x).toFixed(1)},${(C+y).toFixed(1)}`;
-  let s=`<svg viewBox="0 0 ${S} ${S}" role="img" aria-label="Visits plotted by wind direction and speed, colored by trash rating"><defs><clipPath id="cp2"><circle cx="${C}" cy="${C}" r="${R}"/></clipPath></defs>`;
+  let s=`<svg viewBox="0 0 ${S} ${S}" role="img" aria-label="Visits plotted by wind direction and speed, colored by trash level"><defs><clipPath id="cp2"><circle cx="${C}" cy="${C}" r="${R}"/></clipPath></defs>`;
   s+=`<polygon points="${p(fx*300,fy*300)} ${p(fx*300+wx*300,fy*300+wy*300)} ${p(-fx*300+wx*300,-fy*300+wy*300)} ${p(-fx*300,-fy*300)}" fill="var(--water)" opacity=".7" clip-path="url(#cp2)"/>`;
-  [5,10,15,20,25].forEach(m=>{s+=`<circle cx="${C}" cy="${C}" r="${rr(m)}" fill="none" stroke="var(--line)"/><text x="${C+3}" y="${C-rr(m)+11}" font-size="9" fill="var(--muted)" font-family="var(--mono)">${m}</text>`});
+  [5,10,15,20,25].forEach(m=>{s+=`<circle cx="${C}" cy="${C}" r="${rr(m)}" fill="none" stroke="var(--line)"/>`;
+    s+=`<text x="${C+3}" y="${C-rr(m)+11}" font-size="9" fill="var(--muted)" font-family="var(--mono)">${m}</text>`});
   s+=`<line x1="${C+fx*R}" y1="${C+fy*R}" x2="${C-fx*R}" y2="${C-fy*R}" stroke="var(--shore)" stroke-width="2" stroke-dasharray="4 4"/>`;
   [["N",0],["E",90],["S",180],["W",270]].forEach(([t,d])=>{const x=Math.sin(rad(d))*(R+13),y=-Math.cos(rad(d))*(R+13);s+=`<text x="${C+x}" y="${C+y+4}" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="var(--mono)">${t}</text>`});
-  visits.forEach(v=>{const r=rr(v.wind_speed_mph||0),t=rad(v.wind_from_deg),x=Math.sin(t)*r,y=-Math.cos(t)*r;
-    s+=`<circle cx="${C+x}" cy="${C+y}" r="7" fill="${RC[(v.rating||1)-1]}" stroke="var(--panel)" stroke-width="1.5"><title>${v.observed_at.slice(0,10)} · ${v.wind_from_compass} ${v.wind_speed_mph} mph · trash ${v.rating}</title></circle>`});
+  visits.forEach(v=>{const calm=v.wind_from_deg===null||v.wind_from_deg===undefined;
+    const r=calm?0:rr(v.wind_speed_mph||0),t=rad(calm?0:v.wind_from_deg),x=Math.sin(t)*r,y=-Math.cos(t)*r;
+    s+=`<circle cx="${C+x}" cy="${C+y}" r="7" fill="${RC[(v.rating||1)-1]}" stroke="var(--panel)" stroke-width="1.5"><title>${esc(v.observed_at.slice(0,10))} · ${esc(windLabel(v))} · trash ${v.rating}</title></circle>`});
   if(!visits.length) s+=`<text x="${C}" y="${C+4}" text-anchor="middle" font-size="12" fill="var(--muted)" font-family="var(--body)">Your visits will appear here</text>`;
   return s+`</svg>`;
 }
+function windLabel(v){
+  if(v.wind_from_deg===null||v.wind_from_deg===undefined) return v.wind_speed_mph?`Calm (${v.wind_speed_mph} mph)`:"Calm";
+  return `${v.wind_from_compass} ${v.wind_speed_mph} mph`;
+}
 function esc(t){return String(t??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function fmtWhen(at){const d=new Date(at);return isNaN(d)?at:d.toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}
 function renderLog(){
   $("polar").innerHTML=polar();
-  const groups={loading:["Loading wind","var(--load)"],clearing:["Clearing wind","var(--clear)"],alongshore:["Along shore","var(--along)"],calm:["Calm","var(--muted)"]};
-  const agg={};visits.forEach(v=>{(agg[v.wind_class]=agg[v.wind_class]||[]).push(v.rating)});
-  $("summary").innerHTML=Object.entries(groups).map(([k,[n,c]])=>{const a=agg[k]||[];const avg=a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1):"–";
-    return `<div class="stat" style="--sc:${c}"><span class="label">${n}</span><div class="big">${avg}</div><small>avg trash · ${a.length} visit${a.length===1?"":"s"}</small></div>`}).join("");
-  if(!visits.length){$("tablewrap").innerHTML=`<p class="empty">No visits yet. Save your first one above, or import an existing <code>visits.csv</code>.</p>`;return}
-  const rows=[...visits].sort((a,b)=>b.observed_at.localeCompare(a.observed_at)).map(v=>{
-    const c=groups[v.wind_class]||["",""];
-    return `<tr><td class="mono">${esc(v.visit_id)}</td><td>${esc(v.observed_at.replace("T"," "))}</td>
+  const groups={loading:"Loading wind",clearing:"Clearing wind",alongshore:"Along shore",calm:"Calm"};
+  const agg={};visits.forEach(v=>{const k=classify(v.wind_from_deg,v.wind_speed_mph||0).key;(agg[k]=agg[k]||[]).push(v.rating)});
+  $("summary").innerHTML=Object.entries(groups).map(([k,n])=>{const a=agg[k]||[];const avg=a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1):"–";
+    return `<div class="stat" style="--sc:${CLASS_LOOK[k][1]}"><span class="label">${n}</span><div class="big">${avg}</div><small>avg trash · ${a.length} visit${a.length===1?"":"s"}</small></div>`}).join("");
+  const n=committed.length,p=pending.length;
+  $("sourceNote").textContent=(repoLoaded
+    ?`${n} visit${n===1?"":"s"} loaded from data/visits.csv in the repo.`
+    :`Couldn't read data/visits.csv, so only visits saved in this browser are shown. Open the logger from your GitHub Pages link to load the repo data.`)
+    +(p?` ${p} new visit${p===1?" is":"s are"} waiting in this browser. Export the CSV and upload it to the repo to commit ${p===1?"it":"them"}.`:"");
+  if(!visits.length){$("tablewrap").innerHTML=`<p class="empty">No visits yet. Save your first one above.</p>`;return}
+  const rows=[...visits].sort((a,b)=>b.observed_at.localeCompare(a.observed_at)).map(v=>{const c=classify(v.wind_from_deg,v.wind_speed_mph||0);
+    const calm=v.wind_from_deg===null||v.wind_from_deg===undefined;
+    return `<tr><td title="${esc(v.visit_id)}">${esc(fmtWhen(v.observed_at))}${v._committed?"":`<span class="flag new" title="Not in the repo yet">NEW</span>`}${v.deviation?`<span class="flag" title="${esc(v.deviation_reason)}">DEV</span>`:""}</td>
     <td><i class="dot" style="background:${RC[v.rating-1]}"></i>${v.rating}</td>
-    <td>${esc(v.wind_from_compass)} ${v.wind_speed_mph}</td><td style="color:${c[1]}">${esc(c[0].replace(" wind",""))}</td>
-    <td>${esc(v.rain_48h)}</td><td>${esc(v.river_current)}</td><td>${v.days_since_cleaned??"–"}</td><td>${v.bags_collected}</td>
-    <td>${v.deviation?`<span class="flag" title="${esc(v.deviation_reason)}">DEV</span>`:""}</td>
+    <td>${calm?`Calm${v.wind_speed_mph?` ${v.wind_speed_mph}`:""}`:`${esc(v.wind_from_compass)} ${v.wind_speed_mph}`}</td><td style="color:${c.color}">${c.name}</td>
+    <td>${esc(v.rain_48h)}</td><td>${esc(v.river_current)}</td><td>${v.bags_collected??""}</td><td>${v.photo_count??0}</td>
     <td class="note">${esc(v.notes)}</td>
-    <td><button class="del" data-id="${esc(v.visit_id)}" type="button">Delete</button></td></tr>`}).join("");
-  $("tablewrap").innerHTML=`<table><thead><tr><th>Visit ID</th><th>When</th><th>Trash</th><th>Wind mph</th><th>Class</th><th>Rain</th><th>Current</th><th>Days since clean</th><th>Bags</th><th>Dev.</th><th>Notes</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+    <td>${v._committed?"":`<button class="del" data-id="${esc(v.visit_id)}" type="button">Delete</button>`}</td></tr>`}).join("");
+  $("tablewrap").innerHTML=`<table><thead><tr><th>When</th><th>Trash</th><th>Wind mph</th><th>For this spot</th><th>Rain</th><th>Current</th><th>Bags</th><th>Photos</th><th>Notes</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
   $("tablewrap").querySelectorAll(".del").forEach(b=>b.onclick=()=>{
-    if(b.dataset.armed){visits=visits.filter(v=>v.visit_id!==b.dataset.id);persist();renderLog();return}
+    if(b.dataset.armed){pending=pending.filter(v=>v.visit_id!==b.dataset.id);merge();persist();renderLog();return}
     b.dataset.armed="1";b.textContent="Tap again to delete";setTimeout(()=>{b.dataset.armed="";b.textContent="Delete"},4000)});
 }
 
@@ -413,10 +419,14 @@ function runCalc(){
   const mph=Math.round(s.avg);$("lspd").value=mph;
   let msg=`<b>${mph} mph average</b> over ${s.count} reading${s.count===1?"":"s"}`;
   if(s.dir!==null){
-    const i=Math.round(s.dir/22.5)%16;state.logDir=deg(i);compass($("lcompass"),"logDir");
+    const i=Math.round(s.dir/22.5)%16;state.logDir=deg(i);compass($("lcompass"),"logDir",null,true);
+    state.readDir=deg(i);state.readSpd=Math.min(30,mph);$("spd").value=state.readSpd;compass($("compass"),"readDir",renderRead);renderRead();
     msg+=`, mostly from <b>${DIRS[i]}</b>`;
     if(s.steady<0.5) msg+=`. The direction shifted a lot, so try the last 12 hours`;
-  } else msg+=`. No direction found, so pick it on the compass below`;
+  } else if(mph<3){
+    state.logDir=null;compass($("lcompass"),"logDir",null,true);
+    msg+=`. It was calm, so Calm is selected below and no direction will be recorded`;
+  } else msg+=`. The wind was variable with no main direction. Pick one on the compass below, or Calm if there wasn't one`;
   const extras=[];if(s.calm) extras.push(`${s.calm} calm counted as 0`);if(s.vrbl) extras.push(`${s.vrbl} variable`);
   if(extras.length) msg+=` (${extras.join(", ")})`;
   out.innerHTML=msg+". Filled in below.";
@@ -447,7 +457,9 @@ function normalize(o){
     wind_from_deg:num("wind_from_deg"),wind_speed_mph:num("wind_speed_mph"),wind_window_hours:num("wind_window_hours"),
     onshore_mph:num("onshore_mph"),alongshore_mph:num("alongshore_mph"),photo_count:num("photo_count")??0,face_deg:num("face_deg")??50,
     cleaned_this_visit:bool("cleaned_this_visit"),deviation:bool("deviation")};
-  if(!v.visit_id||!v.observed_at||!(v.rating>=1&&v.rating<=5)||typeof v.wind_from_deg!=="number"||Number.isNaN(v.wind_from_deg)) return null;
+  if(!v.visit_id||!v.observed_at||!(v.rating>=1&&v.rating<=5)||Number.isNaN(v.wind_from_deg)||Number.isNaN(v.wind_speed_mph)) return null;
+  if(v.wind_from_deg===null) v.wind_from_compass="CALM";
+  else if(!v.wind_from_compass) v.wind_from_compass=DIRS[Math.round(v.wind_from_deg/22.5)%16];
   return v;
 }
 function download(name,text,type){
@@ -458,45 +470,56 @@ function download(name,text,type){
 /* ---------- save ---------- */
 function localNow(){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)}
 function newId(at){return at.slice(0,10).replace(/-/g,"")+"-"+Math.random().toString(36).slice(2,6)}
+function resetForm(){
+  state.rating=null;ratingChips();$("ratingHint").textContent="Pick a level. The trash scale above shows what each one looks like.";
+  ["notes","devReason","since","paste"].forEach(id=>$(id).value="");$("bags").value=0;$("photoCount").value=2;
+  $("cleaned").checked=false;$("deviation").checked=false;$("devRow").hidden=true;$("calcout").textContent="";$("when").value=localNow();
+}
 function setupForm(){
   $("when").value=localNow();
   try{$("observer").value=localStorage.getItem("ladybird-debris.observer")||""}catch(_){}
   ratingChips();
   chips($("rain"),"rain",[["none","None"],["light","Light"],["heavy","Heavy"]]);
   chips($("flow"),"flow",[["still","Still"],["moving","Moving"],["fast","Fast / release"]]);
-  compass($("lcompass"),"logDir");
+  compass($("lcompass"),"logDir",null,true);
   chips($("hours"),"hours",[[12,"12 hours"],[24,"24 hours"]],runCalc);
   $("paste").addEventListener("input",runCalc);
   $("deviation").addEventListener("change",e=>{$("devRow").hidden=!e.target.checked});
   $("form").addEventListener("submit",e=>{
     e.preventDefault();
-    if(!state.rating){$("status").textContent="Choose a trash rating from 1 to 5 first.";return}
-    if($("deviation").checked&&!$("devReason").value.trim()){$("status").textContent="Describe what differed from the protocol, or untick the deviation box.";$("devReason").focus();return}
-    const at=($("when").value||localNow());
+    if(!state.rating){$("status").textContent="Pick a trash level from 1 to 5 first.";return}
+    if($("deviation").checked&&!$("devReason").value.trim()){$("status").textContent="Describe what differed from the protocol, or untick that box.";$("devReason").focus();return}
+    const at=$("when").value||localNow();
     const mph=Number($("lspd").value)||0, from=state.logDir, c=classify(from,mph);
     const sinceRaw=$("since").value.trim();
     const v={visit_id:newId(at),protocol_version:PROTOCOL_VERSION,site_id:SITE_ID,observed_at:at,observer:$("observer").value.trim(),
       rating:state.rating,days_since_cleaned:sinceRaw===""?null:Number(sinceRaw),cleaned_this_visit:$("cleaned").checked,
-      bags_collected:Number($("bags").value)||0,wind_from_deg:from,wind_from_compass:DIRS[Math.round(from/22.5)%16],
+      bags_collected:Number($("bags").value)||0,wind_from_deg:from,wind_from_compass:from===null?"CALM":DIRS[Math.round(from/22.5)%16],
       wind_speed_mph:mph,wind_window_hours:state.hours,onshore_mph:Math.round(c.on*10)/10,alongshore_mph:Math.round(c.along*10)/10,
       wind_class:c.key,rain_48h:state.rain,river_current:state.flow,photo_count:Number($("photoCount").value)||0,
       deviation:$("deviation").checked,deviation_reason:$("deviation").checked?$("devReason").value.trim():"",
       notes:$("notes").value.trim(),face_deg:FACE};
-    visits.push(v);
-    if(!persist()){visits.pop();$("status").textContent="This browser blocked saving. Turn off private browsing, or export after each visit.";return}
+    pending.push(v);merge();
+    const kept=persist();
     try{localStorage.setItem("ladybird-debris.observer",v.observer)}catch(_){}
-    $("status").textContent=`Saved visit ${v.visit_id}. Name its photos ${at.slice(0,10)}_${v.visit_id}_1.jpg, _2.jpg…`;
-    state.rating=null;ratingChips();$("ratingHint").textContent="Open the trash scale above if you need a reminder of each level.";
-    ["notes","devReason","since","paste"].forEach(id=>$(id).value="");$("bags").value=0;$("cleaned").checked=false;$("deviation").checked=false;$("devRow").hidden=true;
-    $("calcout").textContent="";$("when").value=localNow();renderLog();
+    $("status").textContent=kept
+      ?`Saved in this browser. Export the CSV and upload it to commit it. Name this visit's photos ${at.slice(0,10)}_${v.visit_id}_1.jpg, _2.jpg and so on.`
+      :`Added to the map and table, but this browser won't keep it after you close the page. Tap Export CSV now to keep it.`;
+    resetForm();renderLog();
   });
 }
-
+function confirmArmed(btn){
+  if(btn.dataset.armed){btn.dataset.armed="";return true}
+  btn.dataset.armed="1";setTimeout(()=>{btn.dataset.armed=""},6000);return false;
+}
 function setupData(){
   $("exportCsv").onclick=()=>{if(!visits.length){$("dataStatus").textContent="Nothing to export yet.";return}
-    download("visits.csv",toCsv(),"text/csv");$("dataStatus").textContent=`Exported ${visits.length} visits as visits.csv.`};
+    if(!repoLoaded&&!confirmArmed($("exportCsv"))){$("dataStatus").textContent="The repo file couldn't be read, so this export holds only the visits in this browser. Uploading it would replace the repo's data. Tap Export CSV again only if that's what you want.";return}
+    download("visits.csv",toCsv(),"text/csv");
+    $("dataStatus").textContent=`Exported ${visits.length} visit${visits.length===1?"":"s"} (${pending.length} new). Upload it to data/visits.csv in the repo to commit.`};
   $("exportJson").onclick=()=>{download(`debrisdetector-backup-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify({protocol_version:PROTOCOL_VERSION,site_id:SITE_ID,visits},null,2),"application/json");
     $("dataStatus").textContent="Backup downloaded."};
+  document.querySelector('label[for="importFile"]').addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();$("importFile").click()}});
   $("importFile").addEventListener("change",async e=>{
     const f=e.target.files[0];if(!f) return;
     try{
@@ -504,8 +527,9 @@ function setupData(){
       const raw=f.name.toLowerCase().endsWith(".json")?(JSON.parse(text).visits||[]):parseCsv(text);
       const incoming=raw.map(normalize).filter(Boolean);
       const known=new Set(visits.map(v=>v.visit_id));let added=0;
-      incoming.forEach(v=>{if(!known.has(v.visit_id)){visits.push(v);known.add(v.visit_id);added++}});
-      persist();renderLog();
+      incoming.forEach(v=>{if(!known.has(v.visit_id)){pending.push(v);known.add(v.visit_id);added++}});
+      merge();const kept=persist();renderLog();
+      if(!kept) $("storageNote").hidden=false;
       const skipped=raw.length-incoming.length;
       $("dataStatus").textContent=`Imported ${added} new visit${added===1?"":"s"}`+(incoming.length-added?`, ${incoming.length-added} already here`:"")+(skipped?`, ${skipped} row${skipped===1?"":"s"} skipped as incomplete`:"")+".";
     }catch(_){$("dataStatus").textContent="Couldn't read that file. Use a visits.csv or a backup exported from this logger."}
@@ -513,13 +537,17 @@ function setupData(){
   });
 }
 
+function storageWorks(){try{const k="ladybird-debris.test";localStorage.setItem(k,"1");localStorage.removeItem(k);return true}catch(_){return false}}
 function boot(){
-  load();
+  loadPending();merge();
+  if(!storageWorks()) $("storageNote").hidden=false;
   try{const f=localStorage.getItem("ladybird-debris.face");if(f!==null){FACE=+f;$("face").value=FACE}}catch(_){}
   compass($("compass"),"readDir",renderRead);
   $("spd").addEventListener("input",e=>{state.readSpd=+e.target.value;renderRead()});
   $("face").addEventListener("change",e=>{FACE=((+e.target.value%360)+360)%360;try{localStorage.setItem("ladybird-debris.face",FACE)}catch(_){};renderRead();renderLog()});
-  renderScale();setupForm();setupData();renderRead();renderLog();
+  renderScale();setupForm();setupData();renderRead();
+  $("sourceNote").textContent="Loading data/visits.csv from the repo…";
+  loadCommitted().then(()=>{merge();persist();renderLog()});
 }
 boot();
 </script>

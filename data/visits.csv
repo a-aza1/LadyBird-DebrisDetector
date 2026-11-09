@@ -1,1 +1,2 @@
 visit_id,protocol_version,site_id,observed_at,observer,rating,days_since_cleaned,cleaned_this_visit,bags_collected,wind_from_deg,wind_from_compass,wind_speed_mph,wind_window_hours,onshore_mph,alongshore_mph,wind_class,rain_48h,river_current,photo_count,deviation,deviation_reason,notes,face_deg
+20261108-f5yp,1.0,BCD-01,2026-11-08T14:11,,3,,false,0,22.5,NNE,5,24,4.4,2.3,loading,light,moving,0,true,"Logged before protocol v1.0 was registered; outside the 8:30-9:30 a.m. window; observer, photos and days since cleaned not recorded",,50

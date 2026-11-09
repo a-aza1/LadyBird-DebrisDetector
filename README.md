@@ -12,7 +12,7 @@ The study starts with a single site and will expand once the method is proven.
 | | |
 |---|---|
 | Phase | Pilot, one site |
-| Protocol | [v1.0](docs/PROTOCOL.md), registered 2026-11-08 before the first observation |
+| Protocol | [v1.2](docs/PROTOCOL.md), registered 2026-11-08 before the first observation, amended 2026-11-09 |
 | Site | Blunn Creek Delta (BCD-01), south shore of Lady Bird Lake, west of I-35 |
 | Data collection | November–December 2026 |
 | Results | Pending |
@@ -59,9 +59,16 @@ LadyBird-DebrisDetector/
 ├── data/
 │   ├── README.md        Data dictionary
 │   ├── visits.csv       One row per visit
-│   └── photos/          Visit photos
-└── analysis/
-    └── analyze.py       Runs the pre-registered analysis (Python standard library only)
+│   ├── photos/          Visit photos
+│   └── weather/         Archived Camp Mabry wind and USGS river flow
+├── analysis/
+│   ├── analyze.py       Runs the pre-registered analysis (Python standard library only)
+│   ├── validate.py      Checks visits.csv on every push
+│   ├── fetch_weather.py Archives the weather and river data
+│   └── results.md       Latest report, regenerated automatically
+├── index.html           Redirects the site's home page to the field logger
+└── .github/workflows/
+    └── pipeline.yml     Check, archive, analyze, publish
 ```
 
 ## Quick start
@@ -70,7 +77,7 @@ LadyBird-DebrisDetector/
 
 Open `app/index.html` in a browser. On a phone, host the repo with GitHub Pages and open `https://a-aza1.github.io/LadyBird-DebrisDetector/app/`.
 
-The logger walks through the protocol in order: observe and rate first, then look up conditions, then record cleanup and any deviations. Paste the Camp Mabry wind table and it calculates average speed and direction for you.
+The logger shows how today's wind hits the pocket, the trash scale, a visit form, and a running summary of every visit. Paste the Camp Mabry wind table and it calculates average speed and direction for you. Following the protocol, rate the trash before you look at the wind section.
 
 Visits are stored in your browser. After each visit, tap **Export CSV** and commit the file to `data/visits.csv`.
 
@@ -82,6 +89,20 @@ python3 analysis/analyze.py --out analysis/results.md   # also save the report
 ```
 
 The script needs Python 3.8 or later and no extra packages. It reports mean trash rating by wind class, a Spearman correlation with a permutation p-value, breakdowns by rain and river flow, wind-shift pairs, and a check against each pre-registered decision criterion.
+
+## Automation
+
+A GitHub Actions workflow, [`pipeline.yml`](.github/workflows/pipeline.yml), runs on every push and once a day:
+
+```
+push / daily ──► check visits.csv ──► archive weather ──► re-run analysis ──► publish site
+                 (validate.py)        (fetch_weather.py)   (analyze.py)        (GitHub Pages)
+```
+
+- **Check:** rejects malformed rows and any silent edit to an already-committed visit.
+- **Archive:** saves Camp Mabry hourly wind and rain and USGS river flow to `data/weather/`, so every input can be recomputed from source.
+- **Analyze:** commits a fresh [`analysis/results.md`](analysis/results.md), including a cross-check of entered wind against the archive.
+- **Publish:** deploys the field logger to GitHub Pages.
 
 ## Contributing
 
